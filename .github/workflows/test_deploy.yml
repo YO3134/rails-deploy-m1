@@ -32,10 +32,10 @@ jobs:
           node-version: 16
 
       - name: Cache bundle
-         uses: actions/cache@v2
-         with:
-           path: vendor/bundle
-           key: bundle-v1-${{ hashFiles('Gemfile.lock') }}
+        uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: bundle-v1-${{ hashFiles('Gemfile.lock') }}
 
       - name: Run bundle install
         run: |
