@@ -1,0 +1,42 @@
+name: Test and Deploy
+
+# on イベントを指定する
+on:
+  pull_request:
+# on イベントを複数種類記載も可能
+# on:
+#  push:
+#  pull_request:
+
+# on: [push, pull_request]
+
+# jobs 配下に任意のジョブIDを記載する name:Test 形でIDを定義することができる
+# jobは並行して実行されるdefault
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    # runs-on ワークフローが実行される環境のOSやワークフローを定義する
+    # 他にどのようなソフトウェアがインストールされているかは、GitHubのREADMEを参照。
+    steps:
+      # step は上から順に実行される
+      - uses: actions/checkout@v2
+      # code をチェックアウトする必要がある。GH公式の「アクション」を利用
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.8
+          # actions/setup-rubyというものがありましたが、2021年2月から開発が凍結
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Run bundle install
+        run: |
+          bundle config --local path vendor/bundle
+          bundle config --local without production
+          bundle install
+
+      - run: RAILS_ENV=test bundle exec rails assets:precompile
+
+      - run: bundle exec rails test
